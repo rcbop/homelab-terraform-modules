@@ -1,0 +1,51 @@
+#cloud-config
+hostname: ${hostname}
+users:
+  - name: root
+    ssh_authorized_keys:
+%{ for key in ssh_public_keys ~}
+      - ${key}
+%{ endfor ~}
+ssh_pwauth: false
+package_update: true
+packages:
+  - qemu-guest-agent
+  - curl
+%{ if length(keys(registry_mirrors)) > 0 ~}
+write_files:
+  - path: /etc/rancher/k3s/registries.yaml
+    owner: root:root
+    permissions: "0644"
+    content: |
+      ${replace(registries_yaml, "\n", "\n      ")}
+%{ endif ~}
+runcmd:
+  - hostnamectl set-hostname ${hostname}
+  - |
+    if [ ! -f /etc/k3s_prepared ]; then
+      # Reset Machine-ID for clones to avoid DUID/DHCP issues
+      rm -f /etc/machine-id /var/lib/dbus/machine-id
+      dbus-uuidgen --ensure=/etc/machine-id
+      dbus-uuidgen --ensure
+      # Enable memory cgroups for K3s/K8s
+      sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=".*"/GRUB_CMDLINE_LINUX_DEFAULT="cgroup_enable=memory swapaccount=1"/' /etc/default/grub
+      update-grub
+      touch /etc/k3s_prepared
+      reboot
+    fi
+  - |
+    if [ ! -f /etc/k3s_installed ]; then
+      if [ "${is_first_node}" == "true" ]; then
+        curl -sfL https://get.k3s.io | K3S_TOKEN=${k3s_token} sh -s - server \
+          --cluster-init \
+          --tls-san ${ip}
+      else
+        # Wait for first node to be ready
+        until curl -sk https://${first_node_ip}:6443/cacerts > /dev/null; do
+          sleep 5
+        done
+        curl -sfL https://get.k3s.io | K3S_TOKEN=${k3s_token} K3S_URL=https://${first_node_ip}:6443 sh -s -
+      fi
+      touch /etc/k3s_installed
+    fi
+  - systemctl enable --now qemu-guest-agent
