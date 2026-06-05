@@ -16,7 +16,7 @@ resource "talos_machine_configuration_apply" "control_plane" {
           }
           network = {
             interfaces = [
-              {
+              merge({
                 interface = var.control_plane_nodes[each.key].interface_name
                 addresses = ["${var.control_plane_nodes[each.key].ip}/24"]
                 routes = [
@@ -25,7 +25,13 @@ resource "talos_machine_configuration_apply" "control_plane" {
                     gateway = var.network_gateway
                   }
                 ]
-              }
+                },
+                var.control_plane_vip != null && try(var.control_plane_nodes[each.key].vip_enabled, true) ? {
+                  vip = {
+                    ip = var.control_plane_vip
+                  }
+                } : {}
+              )
             ]
             nameservers = var.nameservers
           }

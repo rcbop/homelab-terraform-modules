@@ -75,6 +75,7 @@ variable "control_plane_nodes" {
     qemu_agent     = bool
     mount_cni      = optional(bool, false)
     interface_name = optional(string, "eth0")
+    vip_enabled    = optional(bool, true)
   }))
 }
 
