@@ -47,7 +47,9 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
     type         = "4m"
   }
 
-  serial_device {}
+  serial_device {
+    device = "socket"
+  }
 
   machine       = "q35"
   scsi_hardware = "virtio-scsi-single"
@@ -60,6 +62,14 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
       pcie    = hostpci.value.pcie
       mdev    = try(hostpci.value.mdev, null)
       xvga    = false
+    }
+  }
+
+  dynamic "vga" {
+    for_each = each.value.vga != null ? [each.value.vga] : []
+    content {
+      type   = vga.value.type
+      memory = vga.value.memory
     }
   }
 

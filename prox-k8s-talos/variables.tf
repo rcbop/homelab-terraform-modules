@@ -108,6 +108,10 @@ variable "worker_nodes" {
       pcie    = bool
       mdev    = optional(string)
     })), [])
+    vga = optional(object({
+      type   = optional(string, "std")
+      memory = optional(number, 16)
+    }))
   }))
 }
 

@@ -113,7 +113,6 @@ resource "talos_machine_configuration_apply" "worker" {
         machine = {
           install = {
             extraKernelArgs = [
-              "video=efifb:off",
               "i915.enable_dc=0",
               "i915.enable_guc=3"
             ]

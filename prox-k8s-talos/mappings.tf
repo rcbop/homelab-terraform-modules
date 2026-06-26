@@ -10,3 +10,16 @@ resource "proxmox_virtual_environment_hardware_mapping_pci" "igpu_atlas" {
     iommu_group  = 0
   }]
 }
+
+resource "proxmox_virtual_environment_hardware_mapping_pci" "igpu_behemoth" {
+  name             = "igpu-behemoth"
+  mediated_devices = false
+
+  map = [{
+    id           = "8086:3e92"
+    node         = "behemoth"
+    path         = "0000:00:02.0"
+    subsystem_id = "103c:8594"
+    iommu_group  = 0
+  }]
+}
