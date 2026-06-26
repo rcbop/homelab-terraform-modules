@@ -25,7 +25,7 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
   }
 
   disk {
-    datastore_id = var.target_storage
+    datastore_id = try(each.value.storage, var.target_storage)
     file_id      = proxmox_virtual_environment_download_file.talos_nocloud_image.id
     file_format  = "raw"
     interface    = "scsi0"
@@ -42,12 +42,14 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
   bios = "ovmf"
 
   efi_disk {
-    datastore_id = var.target_storage
+    datastore_id = try(each.value.storage, var.target_storage)
     file_format  = "raw"
     type         = "4m"
   }
 
-  serial_device {}
+  serial_device {
+    device = "socket"
+  }
 
   machine       = "q35"
   scsi_hardware = "virtio-scsi-single"

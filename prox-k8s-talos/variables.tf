@@ -76,6 +76,7 @@ variable "control_plane_nodes" {
     mount_cni      = optional(bool, false)
     interface_name = optional(string, "eth0")
     vip_enabled    = optional(bool, true)
+    storage        = optional(string)
   }))
 }
 
