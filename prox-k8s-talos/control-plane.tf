@@ -25,7 +25,7 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
   }
 
   disk {
-    datastore_id = try(each.value.storage, var.target_storage)
+    datastore_id = coalesce(try(each.value.storage, null), var.target_storage)
     file_id      = proxmox_virtual_environment_download_file.talos_nocloud_image.id
     file_format  = "raw"
     interface    = "scsi0"
@@ -42,7 +42,7 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
   bios = "ovmf"
 
   efi_disk {
-    datastore_id = try(each.value.storage, var.target_storage)
+    datastore_id = coalesce(try(each.value.storage, null), var.target_storage)
     file_format  = "raw"
     type         = "4m"
   }
