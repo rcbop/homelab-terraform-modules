@@ -1,0 +1,59 @@
+name: Terraform Lint & SAST
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  lint-and-sast:
+    runs-on: kubernetes
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Resolve Terraform & SAST Tools
+        run: |
+          mkdir -p ~/.local/bin
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          export PATH="$HOME/.local/bin:$PATH"
+
+          if ! command -v terraform >/dev/null 2>&1 && ! command -v tofu >/dev/null 2>&1; then
+            echo "Installing OpenTofu..."
+            curl -sL https://github.com/opentofu/opentofu/releases/download/v1.8.4/tofu_1.8.4_linux_amd64.tar.gz | tar -xz -C ~/.local/bin tofu
+            ln -s ~/.local/bin/tofu ~/.local/bin/terraform
+          fi
+
+          if ! command -v tflint >/dev/null 2>&1; then
+            echo "Installing TFLint..."
+            curl -sL https://github.com/terraform-linters/tflint/releases/download/v0.53.0/tflint_linux_amd64.zip -o tflint.zip
+            unzip -o tflint.zip -d ~/.local/bin && chmod +x ~/.local/bin/tflint && rm tflint.zip
+          fi
+
+          if ! command -v tfsec >/dev/null 2>&1; then
+            echo "Installing tfsec..."
+            curl -sL https://github.com/aquasecurity/tfsec/releases/download/v1.28.10/tfsec-linux-amd64 -o ~/.local/bin/tfsec
+            chmod +x ~/.local/bin/tfsec
+          fi
+
+      - name: Terraform Format Check
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          terraform fmt -check -recursive . || echo "Format check reported issues"
+
+      - name: Run TFLint
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          for dir in prox-*; do
+            if [ -d "$dir" ]; then
+              echo "=== Running tflint in $dir ==="
+              (cd "$dir" && tflint --init && tflint)
+            fi
+          done
+
+      - name: Run tfsec SAST Scan
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          tfsec . --soft-fail

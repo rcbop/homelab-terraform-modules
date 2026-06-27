@@ -68,8 +68,10 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
   dynamic "vga" {
     for_each = each.value.vga != null ? [each.value.vga] : []
     content {
-      type   = vga.value.type
-      memory = vga.value.memory
+      type = vga.value.type
+      # memory is only valid for emulated adapters (std/qxl); omit for "none"
+      # so iGPU passthrough nodes stay serial-only and don't deadlock vgaarb
+      memory = vga.value.type == "none" ? null : vga.value.memory
     }
   }
 

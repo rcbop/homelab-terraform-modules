@@ -1,0 +1,40 @@
+name: Terraform Lint & SAST
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  lint-and-sast:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.53.0
+
+      - name: Setup tfsec
+        uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0
+        with:
+          tfsec_args: --soft-fail
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive . || echo "Format check reported issues"
+
+      - name: Run TFLint
+        run: |
+          for dir in prox-*; do
+            if [ -d "$dir" ]; then
+              echo "=== Running tflint in $dir ==="
+              (cd "$dir" && tflint --init && tflint)
+            fi
+          done
