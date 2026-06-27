@@ -15,6 +15,20 @@
       "automerge": true
     }
   ],
+  "hostRules": [
+    {
+      "matchHost": "git.mythogen.cc",
+      "hostType": "forgejo"
+    },
+    {
+      "matchHost": "github.com",
+      "token": "{{env.GITHUB_COM_TOKEN}}"
+    },
+    {
+      "matchHost": "api.github.com",
+      "token": "{{env.GITHUB_COM_TOKEN}}"
+    }
+  ],
   "prHourlyLimit": 3,
   "prConcurrentLimit": 3
 }
