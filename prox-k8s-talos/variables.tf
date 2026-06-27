@@ -89,6 +89,7 @@ variable "worker_nodes" {
     ip             = string
     cpu_cores      = number
     memory_mb      = number
+    balloon_mb     = optional(number, 0)
     disk_size      = number
     qemu_agent     = bool
     mount_cni      = optional(bool, false)

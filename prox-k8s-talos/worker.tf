@@ -22,6 +22,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
 
   memory {
     dedicated = each.value.memory_mb
+    floating  = each.value.balloon_mb
   }
 
   disk {
