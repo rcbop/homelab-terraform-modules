@@ -1,0 +1,20 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":rebaseStalePrs",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "terraform": {
+    "fileMatch": ["\\.tf$", "\\.tfvars$"]
+  },
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "minimumReleaseAge": "4 days",
+      "automerge": true
+    }
+  ],
+  "prHourlyLimit": 3,
+  "prConcurrentLimit": 3
+}
