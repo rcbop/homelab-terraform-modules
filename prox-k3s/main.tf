@@ -1,6 +1,5 @@
 locals {
   first_node_key = keys(var.nodes)[0]
-  join_node_keys = slice(keys(var.nodes), 1, length(keys(var.nodes)))
 }
 
 # This was missing or undeclared according to your error
