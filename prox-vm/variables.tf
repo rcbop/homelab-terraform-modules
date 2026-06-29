@@ -36,6 +36,18 @@ variable "bios" {
   type    = string
   default = "seabios"
 }
+variable "machine" {
+  type    = string
+  default = "q35"
+}
+variable "protection" {
+  type    = bool
+  default = false
+}
+variable "scsi_hardware" {
+  type    = string
+  default = "virtio-scsi-single"
+}
 variable "efi_datastore_id" {
   type    = string
   default = null
