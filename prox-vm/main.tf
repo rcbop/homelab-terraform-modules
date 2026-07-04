@@ -1,10 +1,13 @@
 resource "proxmox_virtual_environment_vm" "this" {
-  name        = var.name
-  node_name   = var.target_node
-  vm_id       = var.vmid
-  tags        = var.tags
-  description = "Managed by Terraform"
-  bios        = var.bios
+  name          = var.name
+  node_name     = var.target_node
+  vm_id         = var.vmid
+  tags          = var.tags
+  description   = "Managed by Terraform"
+  bios          = var.bios
+  machine       = var.machine
+  protection    = var.protection
+  scsi_hardware = var.scsi_hardware
 
   cpu {
     cores = var.cpu_cores
