@@ -62,6 +62,7 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
     ignore_changes = [
       network_device,
       disk[0].file_id,
+      initialization,
     ]
   }
 }
