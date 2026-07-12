@@ -86,6 +86,8 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
       disk,
       disk[0].file_id,
       initialization,
+      memory,
+      cpu,
     ]
   }
 }

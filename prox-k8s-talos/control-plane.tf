@@ -63,6 +63,8 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
       network_device,
       disk[0].file_id,
       initialization,
+      memory,
+      cpu,
     ]
   }
 }
