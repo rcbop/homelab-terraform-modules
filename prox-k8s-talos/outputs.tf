@@ -1,13 +1,3 @@
-output "talos_config" {
-  value     = data.talos_client_configuration.this.talos_config
-  sensitive = true
-}
-
-output "kubeconfig_raw" {
-  value     = talos_cluster_kubeconfig.this.kubeconfig_raw
-  sensitive = true
-}
-
 output "talos_schematic_id" {
   value       = talos_image_factory_schematic.this.id
   description = "The Talos Image Factory schematic ID"
